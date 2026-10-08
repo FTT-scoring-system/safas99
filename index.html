@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAFAS — Gestion de la société</title>
+<style>
+:root{
+  --green:#2f6f4e; --green2:#3f8a63; --light:#f4f5f2;
+  --gray:#68706b; --gray2:#dfe3df; --brown:#5f6b64; --brown2:#37423c;
+  --white:#fff; --danger:#b94a48; --shadow:0 10px 30px rgba(40,55,45,.08);
+}
+*{box-sizing:border-box} body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--light);color:#27312b}
+button,input,select{font:inherit}
+.app{display:flex;min-height:100vh}
+.sidebar{width:255px;background:var(--brown2);color:#fff;padding:22px 15px;position:fixed;right:0;top:0;bottom:0}
+.brand{font-size:23px;font-weight:800;padding:8px 12px 25px;display:flex;gap:10px;align-items:center}
+.brand span{background:var(--green);padding:9px;border-radius:12px}
+.nav button{display:block;width:100%;border:0;background:transparent;color:#eee;text-align:right;padding:14px 16px;margin:4px 0;border-radius:11px;cursor:pointer}
+.nav button:hover,.nav button.active{background:var(--green)}
+.main{margin-right:255px;width:calc(100% - 255px);padding:25px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.top h1{margin:0;font-size:28px}.date{color:var(--gray)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.card,.panel{background:#fff;border-radius:16px;box-shadow:var(--shadow);border:1px solid #e7ebe7}
+.card{padding:20px}.label{color:var(--gray);font-size:14px}.value{font-size:28px;font-weight:800;margin-top:9px}.accent{color:var(--green)}
+.panel{padding:20px;margin-bottom:20px}
+.panel h2{margin:0 0 18px;font-size:19px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label{display:flex;flex-direction:column;gap:7px;color:var(--gray);font-size:14px}
+input,select{border:1px solid var(--gray2);padding:11px;border-radius:9px;background:#fff;outline:none}
+input:focus,select:focus{border-color:var(--green)}
+.btn{border:0;border-radius:9px;padding:11px 17px;cursor:pointer;font-weight:700}
+.primary{background:var(--green);color:#fff}.secondary{background:#ecefeb;color:#36413a}.brown{background:var(--brown);color:#fff}.danger{background:#f4dddd;color:#8c3533}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+table{width:100%;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid #edf0ed;text-align:right}th{color:var(--gray);font-size:13px;background:#fafbfa}
+.badge{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}.present{background:#e0f0e6;color:#236241}.absent{background:#f6dddd;color:#943a38}
+.hidden{display:none!important}.empty{padding:30px;text-align:center;color:#89918b}
+.notice{background:#f0f5f0;border-right:4px solid var(--green);padding:12px 15px;border-radius:8px;margin-bottom:16px}
+@media(max-width:900px){.sidebar{width:200px}.main{margin-right:200px;width:calc(100% - 200px)}.cards{grid-template-columns:repeat(2,1fr)}.formgrid,.grid2{grid-template-columns:1fr}}
+</style>
+
+<style>
+body{background:#f2f4f1}
+.sidebar{width:270px;background:linear-gradient(180deg,#3d4a43 0%,#303a35 100%);padding:24px 16px;box-shadow:-8px 0 30px rgba(48,35,29,.10)}
+.brand{font-size:24px;padding:8px 12px 28px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:18px}
+.brand span{background:#2f6f4e;box-shadow:0 8px 18px rgba(47,111,78,.25)}
+.nav button{font-size:15px;padding:14px 17px;margin:5px 0;transition:.2s}
+.nav button:hover{background:rgba(255,255,255,.08);transform:translateX(-2px)}
+.nav button.active{background:#2f6f4e;box-shadow:0 8px 18px rgba(47,111,78,.22)}
+.main{padding:30px;max-width:1600px}
+.top{background:#fff;border:1px solid #e6eae6;border-radius:18px;padding:18px 22px;box-shadow:0 8px 24px rgba(38,55,44,.06);margin-bottom:22px}
+.top h1{font-size:25px;color:#2d3831}
+.date{margin-top:5px}
+.cards{gap:18px}
+.card{position:relative;overflow:hidden;padding:22px;border-radius:18px}
+.card:before{content:"";position:absolute;right:0;top:0;bottom:0;width:5px;background:#2f6f4e}
+.card:nth-child(3):before{background:#a84745}.card:nth-child(4):before{background:#795548}
+.value{font-size:30px;color:#303a34}
+.panel{border-radius:18px;padding:22px;box-shadow:0 8px 25px rgba(38,55,44,.055)}
+.panel h2{font-size:18px;color:#344139;border-bottom:1px solid #edf0ed;padding-bottom:14px}
+table{border-spacing:0 4px;border-collapse:separate}
+th{background:#f6f8f5}
+th,td{padding:13px 12px}
+tbody tr{background:#fff;transition:.15s}
+tbody tr:hover{background:#f7faf7}
+input,select{height:44px;border-radius:10px;background:#fbfcfb}
+.btn{padding:11px 18px;border-radius:10px;transition:.18s}
+.btn:hover{transform:translateY(-1px);filter:brightness(.98)}
+.primary{background:#2f6f4e}.brown{background:#5f6b64}
+.badge{min-width:64px;text-align:center}
+.empty{padding:42px 20px;background:#fafbfa;border-radius:12px}
+@media(max-width:900px){.sidebar{width:220px}.main{margin-right:220px;width:calc(100% - 220px);padding:18px}}
+</style>
+
+<style>
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#eef3ef 0%,#dfe8e2 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+.loginCard{width:min(470px,92vw);background:#fff;border-radius:28px;padding:42px 38px;box-shadow:0 25px 70px rgba(40,60,48,.15);text-align:center;border:1px solid #e3e9e4;animation:loginIn .55s ease}
+.logoMark{width:92px;height:92px;margin:0 auto 20px;border-radius:25px;background:linear-gradient(145deg,#3f8a63,#2f6f4e);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:25px;letter-spacing:1px;box-shadow:0 14px 30px rgba(47,111,78,.25);position:relative}
+.logoMark:after{content:"";position:absolute;width:34px;height:34px;border:3px solid rgba(255,255,255,.75);border-radius:8px;transform:rotate(45deg)}
+.loginTitle{font-size:30px;font-weight:900;color:#29352e;margin:5px 0}
+.loginSub{font-size:14px;color:#69736d;line-height:1.8;margin:0 auto 28px;max-width:360px}
+.loginInput{width:100%;height:48px;text-align:center;border:1px solid #dfe5e0;border-radius:12px;margin-bottom:12px}
+.loginBtn{width:100%;height:48px;border:0;border-radius:12px;background:#2f6f4e;color:#fff;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(47,111,78,.2)}
+.loginBtn:hover{background:#276043}
+#loginError{display:none;color:#a84745;font-size:13px;margin-top:10px}
+#successToast{position:fixed;top:28px;left:50%;transform:translate(-50%,-30px) scale(.85);opacity:0;pointer-events:none;z-index:10000;background:#fff;border:1px solid #dce9df;border-radius:18px;padding:13px 24px 13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 16px 40px rgba(30,65,44,.18);transition:opacity .25s ease,transform .35s cubic-bezier(.2,.8,.2,1)}
+#successToast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.validIcon{width:34px;height:34px;border-radius:50%;background:#2f6f4e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;animation:pop .45s cubic-bezier(.2,1.5,.4,1)}
+.validText{font-weight:900;color:#2f6f4e;font-size:16px}
+@keyframes pop{0%{transform:scale(0) rotate(-25deg)}70%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes loginIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.chefBadge{background:#e8eee9;color:#3d4a43;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:800}
+</style>
+
+<style id="printStyles">
+@media print{
+  body{background:#fff!important}
+  .sidebar,.top .btn,.actions,.nav,.no-print{display:none!important}
+  .main{margin:0!important;width:100%!important;padding:0!important}
+  .page{display:none!important}
+  #wages{display:block!important}
+  #wages .panel:first-child{display:none!important}
+  #wagesTable{display:block!important}
+  .panel{box-shadow:none!important;border:0!important}
+  table{font-size:12px}
+  .printHeader{display:block!important;text-align:center;margin-bottom:20px}
+}
+.printHeader{display:none}
+</style>
+
+<style>
+.salarySheet{background:#fff}
+.sheetHead b{letter-spacing:1px}
+</style>
+
+<style id="safasBeauty">
+:root{
+ --green:#2f6f4e;--green2:#3f8a63;--green3:#eaf3ed;
+ --ink:#25332b;--muted:#728078;--line:#e2e9e4;--bg:#f4f7f5;--white:#fff;
+ --shadow:0 14px 40px rgba(38,61,48,.08);
+}
+*{box-sizing:border-box}
+body{
+ font-family:"Segoe UI",Tahoma,Arial,sans-serif!important;
+ background:radial-gradient(circle at 10% 0%,#ffffff 0,#f4f7f5 35%,#eef3ef 100%)!important;
+ color:var(--ink);letter-spacing:.05px;
+}
+.sidebar{
+ background:linear-gradient(180deg,#34433b,#29352f)!important;
+ box-shadow:0 0 35px rgba(28,45,36,.13)!important;
+}
+.brand{font-weight:900!important;letter-spacing:.6px}
+.brand span{background:linear-gradient(135deg,var(--green2),var(--green))!important}
+.nav button{border:1px solid transparent!important;transition:transform .22s ease,background .22s ease,box-shadow .22s ease!important}
+.nav button:hover{transform:translateX(-4px)!important;background:rgba(255,255,255,.07)!important}
+.nav button.active{box-shadow:0 10px 24px rgba(47,111,78,.22)!important}
+.main{animation:pageIn .45s ease both}
+.top{
+ border:1px solid rgba(226,233,228,.9)!important;border-radius:20px!important;
+ box-shadow:var(--shadow)!important;backdrop-filter:blur(8px);
+}
+.cards .card,.panel{
+ border:1px solid var(--line)!important;border-radius:20px!important;
+ box-shadow:var(--shadow)!important;transition:transform .2s ease,box-shadow .2s ease!important;
+}
+.cards .card:hover,.panel:hover{transform:translateY(-2px);box-shadow:0 18px 45px rgba(38,61,48,.10)!important}
+.card:before{width:4px!important;background:linear-gradient(#3f8a63,#2f6f4e)!important}
+input,select{
+ border:1px solid #dce5df!important;background:#fbfdfc!important;
+ color:var(--ink)!important;outline:none!important;
+ transition:border-color .2s,box-shadow .2s,transform .2s!important;
+}
+input:focus,select:focus{border-color:#76a98c!important;box-shadow:0 0 0 4px rgba(47,111,78,.09)!important;transform:translateY(-1px)}
+.btn{
+ border:0!important;border-radius:12px!important;font-weight:800!important;
+ transition:transform .2s ease,box-shadow .2s ease,filter .2s ease!important;
+}
+.btn:hover{transform:translateY(-2px)!important;box-shadow:0 9px 20px rgba(38,61,48,.13)!important}
+.primary{background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important}
+.secondary{background:#e9efeb!important;color:#34443b!important}
+table{border-collapse:separate!important;border-spacing:0 5px!important}
+thead th{background:#edf3ef!important;color:#526158!important;border:0!important}
+tbody tr{box-shadow:0 3px 10px rgba(38,61,48,.035);transition:transform .18s,box-shadow .18s!important}
+tbody tr:hover{transform:scale(1.005);box-shadow:0 8px 18px rgba(38,61,48,.07)}
+.badge{border-radius:999px!important}
+h1,h2,h3{letter-spacing:-.2px}
+.actions{gap:10px!important}
+#loginScreen{
+ background:
+ radial-gradient(circle at 15% 15%,rgba(63,138,99,.14),transparent 28%),
+ radial-gradient(circle at 85% 85%,rgba(47,111,78,.12),transparent 30%),
+ linear-gradient(135deg,#f7faf8,#e7efe9)!important;
+}
+.loginCard{
+ border:1px solid rgba(255,255,255,.9)!important;
+ box-shadow:0 30px 90px rgba(38,61,48,.15)!important;
+ animation:loginIn .65s cubic-bezier(.2,.8,.2,1)!important;
+}
+.loginTitle{letter-spacing:2px!important}
+.loginBtn{background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important;transition:transform .2s,box-shadow .2s!important}
+.loginBtn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(47,111,78,.25)}
+#successToast{border:1px solid #dce9df!important;backdrop-filter:blur(10px)}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes loginIn{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+@media(max-width:900px){.main{padding:16px!important}}
+</style>
+<style>#weeklyProduction .panel{animation:pageIn .35s ease}.allHeader h2{margin-bottom:8px}.allMeta{border-radius:8px}</style>
+<style id="mainDateUpgrade">
+/* Large, highly visible date on the SAFAS home screen */
+#todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+  font-size:clamp(1.35rem,2.7vw,2.25rem)!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  letter-spacing:.2px!important;
+  line-height:1.25!important;
+  padding:12px 18px!important;
+  margin:8px 0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:58px!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,#f0f7f2,#ffffff)!important;
+  border:1px solid #dce9df!important;
+  box-shadow:0 10px 25px rgba(38,61,48,.07)!important;
+  animation:dateReveal .55s cubic-bezier(.2,.8,.2,1) both!important;
+}
+@keyframes dateReveal{
+ from{opacity:0;transform:translateY(-8px) scale(.97)}
+ to{opacity:1;transform:none}
+}
+@media(max-width:700px){
+ #todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+   font-size:1.25rem!important;
+   width:100%!important;
+ }
+}
+</style>
+<style id="backupVisibilityFix">
+.backupPanel{overflow:hidden!important}
+.backupHint{margin:-4px 0 18px;color:#728078;font-size:14px}
+.backupActions{display:flex!important;flex-wrap:wrap!important;gap:12px!important;align-items:center!important}
+.backupBtn{min-width:220px!important;min-height:52px!important;font-size:15px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;opacity:1!important;visibility:visible!important}
+.backupPanel .backupBtn.primary{color:#fff!important;background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important}
+.backupPanel .backupBtn.secondary{color:#34443b!important;background:#e9efeb!important;border:1px solid #d6e2da!important}
+.backupMsg{min-height:24px;margin-top:14px;font-weight:800;transition:opacity .25s,transform .25s}
+@media(max-width:650px){.backupActions{flex-direction:column}.backupBtn{width:100%!important;min-width:0!important}}
+</style><style>.backupMsg{transition:opacity .25s,transform .25s}</style>
+<style id="safasFinalVisual">
+/* Main header: large readable title + date */
+.top{
+  min-height:112px!important;
+  padding:22px 28px!important;
+  display:flex!important;
+  align-items:center!important;
+  border-radius:22px!important;
+}
+.top #pageTitle{
+  font-size:clamp(2rem,4vw,3.15rem)!important;
+  line-height:1.05!important;
+  font-weight:950!important;
+  color:#26372d!important;
+  margin:0 0 10px!important;
+}
+.top .date,#today{
+  display:block!important;
+  font-size:clamp(1.55rem,3vw,2.35rem)!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  background:#edf6f0!important;
+  border:1px solid #d7e8dc!important;
+  border-radius:14px!important;
+  padding:10px 16px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  box-shadow:0 8px 22px rgba(47,111,78,.08)!important;
+  animation:headerDateIn .55s ease both!important;
+}
+@keyframes headerDateIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:none}
+}
+
+/* More elegant, welcoming login screen */
+#loginScreen{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(63,138,99,.20),transparent 32%),
+    radial-gradient(circle at 85% 80%,rgba(47,111,78,.15),transparent 35%),
+    linear-gradient(135deg,#f7faf8 0%,#e5efe8 100%)!important;
+}
+.loginCard{
+  width:min(500px,92vw)!important;
+  padding:48px 44px 42px!important;
+  border-radius:30px!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid rgba(255,255,255,.95)!important;
+  box-shadow:0 30px 90px rgba(38,61,48,.17),0 4px 16px rgba(38,61,48,.06)!important;
+}
+.loginTitle{
+  font-size:clamp(2.8rem,8vw,4.3rem)!important;
+  font-weight:950!important;
+  letter-spacing:4px!important;
+  color:#2f6f4e!important;
+  text-shadow:0 8px 22px rgba(47,111,78,.13)!important;
+}
+.loginSub{
+  font-size:15px!important;
+  line-height:1.7!important;
+  color:#68766e!important;
+  margin:4px auto 28px!important;
+  max-width:390px!important;
+}
+.loginInput{
+  width:100%!important;
+  height:56px!important;
+  margin:9px 0!important;
+  padding:0 18px!important;
+  border:1px solid #dce7df!important;
+  border-radius:15px!important;
+  background:#f8fbf9!important;
+  font-size:16px!important;
+  transition:.22s ease!important;
+}
+.loginInput:focus{
+  background:#fff!important;
+  border-color:#6fa387!important;
+  box-shadow:0 0 0 5px rgba(63,138,99,.10)!important;
+  transform:translateY(-1px)!important;
+}
+.loginBtn{
+  width:100%!important;
+  height:56px!important;
+  margin-top:14px!important;
+  border-radius:15px!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  box-shadow:0 12px 25px rgba(47,111,78,.18)!important;
+}
+.loginCard:before{
+  content:"";
+  display:block;
+  width:70px;height:5px;
+  margin:0 auto 22px;
+  border-radius:99px;
+  background:linear-gradient(90deg,#2f6f4e,#6ca583);
+}
+.loginError{
+  border-radius:12px!important;
+  margin-top:12px!important;
+  animation:shake .28s ease!important;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  35%{transform:translateX(-5px)}
+  70%{transform:translateX(5px)}
+}
+
+/* Backup title without any broken icon */
+.backupPanel h2{
+  font-size:clamp(1.7rem,3vw,2.2rem)!important;
+  font-weight:950!important;
+  color:#2d4035!important;
+}
+
+/* General readability */
+.panel h2,.panel h3{font-weight:900!important}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="loginCard">
+    <div class="loginTitle">SAFAS</div>
+    <div class="loginSub">Société Abidi pour la Fabrication des Articles Scolaires</div>
+    <input id="loginName" class="loginInput" placeholder="Nom d’utilisateur" autocomplete="off">
+    <input id="loginPass" class="loginInput" type="password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')login()">
+    <button class="loginBtn" onclick="login()">Entrer</button>
+    <div id="loginError">Veuillez saisir vos informations.</div>
+  </div>
+</div>
+<div id="successToast"><div class="validIcon">✓</div><div class="validText">validé</div></div>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><span>SA</span> SAFAS</div>
+  <div class="nav">
+    <button class="active" data-page="dashboard">🏠 الرئيسية</button>
+    <button data-page="workers">👥 العمال</button>
+    <button data-page="attendance">📅 الحضور</button>
+    <button data-page="production">🏭 الإنتاج</button>
+    <button data-page="wages">💰 الأجور</button>
+    <button data-page="reports">📊 التقارير</button>
+    <button data-page="settings">⚙️ الإعدادات</button>
+    <button data-page="backup">💾 النسخ الاحتياطي</button>
+  </div>
+</aside>
+
+<main class="main">
+<header class="top"><div><h1 id="pageTitle">الرئيسية</h1><div class="date" id="today"></div></div>
+</header>
+
+<section id="dashboard" class="page">
+  <div class="cards">
+    <div class="card"><div class="label">إجمالي العمال</div><div class="value" id="cWorkers">0</div></div>
+    <div class="card"><div class="label">الحاضرون اليوم</div><div class="value accent" id="cPresent">0</div></div>
+    <div class="card"><div class="label">الغائبون اليوم</div><div class="value" style="color:#a84745" id="cAbsent">0</div></div>
+    <div class="card"><div class="label">إنتاج اليوم</div><div class="value" id="cProduction">0 د</div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h2>ملخص الأقسام</h2><table><thead><tr><th>القسم</th><th>العمال</th><th>الحاضرون</th><th>الغائبون</th></tr></thead><tbody id="deptSummary"></tbody></table></div>
+    <div class="panel"><h2>إنتاج اليوم</h2><div id="todayProduction" class="empty">لا توجد بيانات إنتاج بعد.</div></div>
+  </div>
+</section>
+
+<section id="workers" class="page hidden">
+<div class="panel">
+<h2>إضافة عامل</h2>
+<div class="formgrid">
+<label>اسم العامل<input id="wName" placeholder="مثال: محمد"></label>
+<label>القسم<select id="wDept"><option value="1">المصنع</option><option value="2">مصنع الطباشير</option></select></label>
+<label>صنف العامل<select id="wType" onchange="toggleChefWage()"><option value="20">20 د / يوم</option><option value="25">25 د / يوم</option><option value="production">حسب الإنتاج</option><option value="tara">إنتاج بالطارة</option><option value="chef">Chef de travail</option></select></label>
+<label id="chefWageWrap" class="hidden">الأجر اليومي لـ Chef de travail (د)<input type="number" min="0" step="0.001" id="chefDailyWage" placeholder="مثال: 35.000"></label>
+</div><div class="actions"><button class="btn primary" onclick="addWorker()">+ إضافة العامل</button></div>
+</div>
+<div class="panel"><h2>قائمة العمال</h2><div id="workersTable"></div></div>
+</section>
+
+<section id="attendance" class="page hidden">
+<div class="panel">
+<h2>سجل الحضور</h2>
+<div class="formgrid">
+<label>التاريخ<input type="date" id="attDate" onchange="renderAttendance()"></label>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="setAllAttendance(true)">تسجيل الجميع حاضر</button>
+<button class="btn secondary" onclick="setAllAttendance(false)">تسجيل الجميع غائب</button>
+</div>
+</div>
+<div class="panel">
+<div id="attendanceTable"></div>
+</div>
+</section>
+
+<section id="production" class="page hidden">
+
+<div class="panel">
+<h2>تسجيل الإنتاج اليومي</h2>
+<div class="formgrid">
+<label>التاريخ<input type="date" id="pDate"></label>
+<label>عامل الإنتاج<select id="productionWorker"></select></label>
+<label>نوع الإنتاج<select id="pProduct">
+<option value="GB80">GB80 — 2.500 د / كرتونة</option>
+<option value="GC80">GC80 — 3.571 د / كرتونة</option>
+<option value="PB10">PB10 — 2.500 د / كرتونة</option>
+<option value="PC">PC — 6.250 د / كرتونة</option>
+<option value="TARA">إنتاج بالطارة</option>
+</select></label>
+<label id="pQtyWrap">عدد الكراتين<input type="number" min="0" step="1" id="pQty" value="0"></label>
+<label id="pTaraWrap" class="hidden">نوع الطارة<select id="pTaraType"><option value="color">طارة ملونة</option><option value="white">طارة بيضاء</option></select></label>
+<label id="pTaraQtyWrap" class="hidden">عدد الطارات<input type="number" min="0" step="1" id="pTaraQty" value="0"></label>
+<label>طارات طباشير ملون<input type="number" min="0" step="1" id="pColorTara" value="0"></label>
+<label>طارات طباشير أبيض<input type="number" min="0" step="1" id="pWhiteTara" value="0"></label>
+</div><div class="notice">الطارات الملونة والأبيض تُسجّل باسم عامل الإنتاج نفسه، ويُحسب أجرها حسب السعر المحدد في الإعدادات.</div><div class="actions"><button class="btn primary" onclick="addProduction()">حفظ الإنتاج</button></div>
+</div>
+<div class="panel"><h2>سجل الإنتاج</h2><div id="productionTable"></div></div>
+</section>
+
+
+<section id="weeklyProduction" class="page hidden">
+<div class="panel">
+<h2>الإنتاج الأسبوعي</h2>
+<div class="formgrid">
+<label>من تاريخ<input type="date" id="pFrom"></label>
+<label>إلى تاريخ<input type="date" id="pTo"></label>
+<label>العامل<select id="weeklyWorker"><option value="all">جميع عمال مصنع الطباشير</option></select></label>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="calculateWeeklyProduction()">حساب الإنتاج</button>
+<button class="btn secondary" onclick="printWeeklyWorker()">🖨️ PDF عامل</button>
+<button class="btn secondary" onclick="printWeeklyAll()">📄 PDF جميع العمال</button>
+</div>
+</div>
+<div class="panel"><div id="weeklyProductionTable"></div></div>
+</section>
+<section id="wages" class="page hidden">
+<div class="panel">
+<h2>كشف الأجور</h2>
+<div class="formgrid">
+<label>من تاريخ<input type="date" id="wFrom"></label>
+<label>إلى تاريخ<input type="date" id="wTo"></label>
+<label>العامل<select id="wWorker"><option value="all">جميع العمال</option></select></label>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="calculateWages()">حساب الأجور</button>
+<button class="btn secondary" onclick="printSelectedWage()">🖨️ PDF عامل</button>
+<button class="btn secondary" onclick="printAllWages()">📄 PDF جميع العمال</button>
+</div>
+</div>
+<div class="panel"><div id="wagesTable"></div></div>
+</section>
+
+<section id="reports" class="page hidden">
+<div class="panel"><h2>التقارير</h2><div class="actions">
+<button class="btn primary" onclick="calculateWages();showPage('wages')">كشف الأجور</button>
+<button class="btn secondary" onclick="showPage('production')">تقرير الإنتاج</button>
+<button class="btn secondary" onclick="showPage('attendance')">تقرير الحضور</button>
+</div></div>
+</section>
+
+<section id="settings" class="page hidden">
+<div class="panel"><h2>أسعار الإنتاج والطارات</h2>
+<div class="formgrid">
+<label>GB80 — د / كرتونة<input type="number" id="gb80Price" min="0" step="0.001"></label>
+<label>GC80 — د / كرتونة<input type="number" id="gc80Price" min="0" step="0.001"></label>
+<label>PB10 — د / كرتونة<input type="number" id="pb10Price" min="0" step="0.001"></label>
+<label>PC — د / كرتونة<input type="number" id="pcPrice" min="0" step="0.001"></label>
+<label>سعر الطارة الملونة — د / طارة<input type="number" id="colorPrice" min="0" step="0.001"></label>
+<label>سعر الطارة البيضاء — د / طارة<input type="number" id="whitePrice" min="0" step="0.001"></label>
+</div><p style="color:#728078;font-weight:700">يمكنك تغيير سعر كل نوع من الكراتين وسعر الطارات من هنا. الأسعار الجديدة تطبق على تسجيلات الإنتاج الجديدة.</p>
+<div class="actions"><button class="btn primary" onclick="saveSettings()">حفظ جميع الأسعار</button></div><div id="settingsMsg" style="margin-top:12px;color:#2f6f4e;font-weight:700"></div>
+</div>
+<div class="panel"><h2>تغيير كلمة السر</h2>
+<div class="formgrid">
+<label>كلمة السر الحالية<input type="password" id="oldPassword"></label>
+<label>كلمة السر الجديدة<input type="password" id="newPassword"></label>
+<label>تأكيد كلمة السر<input type="password" id="confirmPassword"></label>
+</div>
+<div class="actions"><button class="btn primary" onclick="changePassword()">حفظ كلمة السر</button></div>
+<div id="passwordMsg" style="margin-top:12px;color:#2f6f4e;font-weight:700"></div>
+</div>
+</section>
+
+<section id="backup" class="page hidden">
+<div class="panel backupPanel">
+<h2>النسخ الاحتياطي</h2>
+<p class="backupHint">احفظ نسخة من بيانات SAFAS لاسترجاعها عند الحاجة.</p>
+<div class="backupActions">
+<button type="button" class="btn primary backupBtn" onclick="createBackup()">💾 إنشاء نسخة احتياطية</button>
+<button type="button" class="btn secondary backupBtn" onclick="document.getElementById('backupFile').click()">↩️ استرجاع نسخة احتياطية</button>
+<input id="backupFile" type="file" accept=".json,application/json" hidden onchange="restoreBackup(event)">
+</div>
+<div id="backupMsg" class="backupMsg"></div>
+</div>
+</section>
+</main>
+</div>
+
+<script>
+const KEY='company_manager_v1';
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||{
+ workers:[], attendance:{}, production:[],
+ settings:{productPrices:{GB80:2.5,GC80:3.571,PB10:2.5,PC:6.25},colorPrice:1.5,whitePrice:1,password:'safas123'}
+};
+const PRODUCT_PRICES={GB80:2.500,GC80:3.571,PB10:2.500,PC:6.250,TARA:0};
+const PRODUCT_LABELS={GB80:'GB80',GC80:'GC80',PB10:'PB10',PC:'PC',TARA:'إنتاج بالطارة'};
+function save(){localStorage.setItem(KEY,JSON.stringify(db)); refreshAll()}
+function dateStr(d=new Date()){return d.toISOString().slice(0,10)}
+document.getElementById('today').textContent=new Intl.DateTimeFormat('ar-TN',{dateStyle:'full'}).format(new Date());
+document.getElementById('attDate').value=dateStr();document.getElementById('pDate').value=dateStr();
+document.getElementById('wTo').value=dateStr();let x=new Date();x.setDate(x.getDate()-6);document.getElementById('wFrom').value=dateStr(x);
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+document.getElementById('pProduct').addEventListener('change',function(){const isT=this.value==='TARA';pQtyWrap.classList.toggle('hidden',isT);pTaraWrap.classList.toggle('hidden',!isT);pTaraQtyWrap.classList.toggle('hidden',!isT);});
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=document.querySelector(`[data-page="${id}"]`).textContent.replace(/^.\s*/,'');refreshAll()}
+function toggleChefWage(){
+  chefWageWrap.classList.toggle('hidden',wType.value!=='chef');
+}
+function addWorker(){
+ let name=wName.value.trim(),dept=wDept.value,type=wType.value;
+ let dailyWage=type==='chef'?(Number(chefDailyWage.value)||0):Number(type)||0;
+ if(!name)return alert('أدخل اسم العامل');
+ if(type==='chef' && dailyWage<=0)return alert('أدخل الأجر اليومي لـ Chef de travail');
+ if(type==='chef' && db.workers.some(w=>w.type==='chef')) return alert('يوجد Chef de travail بالفعل. هذا الصنف مخصص لشخص واحد فقط.');
+ if(type==='chef') dept='1';
+ if(dept==='2' && type!=='tara')type='production';
+ db.workers.push({id:Date.now(),name,dept,type,dailyWage,active:true});
+ wName.value='';chefDailyWage.value='';toggleChefWage();save();
+}
+function delWorker(id){if(confirm('حذف العامل؟')){db.workers=db.workers.filter(w=>w.id!==id);save()}}
+function workersHTML(){
+ if(!db.workers.length)return '<div class="empty">لا يوجد عمال. أضف أول عامل من الأعلى.</div>';
+ return `<table><thead><tr><th>العامل</th><th>القسم</th><th>الأجر</th><th>إجمالي الطارات (أبيض / ملون)</th><th>الإجراء</th></tr></thead><tbody>`+
+ db.workers.map(w=>{let prod=db.production.filter(r=>r.workerId===w.id),ct=prod.reduce((s,r)=>s+Number(r.colorTara||0),0),wt=prod.reduce((s,r)=>s+Number(r.whiteTara||0),0);return `<tr><td>${esc(w.name)}</td><td>${w.dept==='1'?'المصنع':'مصنع الطباشير'}</td><td>${w.type==='production'?'حسب الإنتاج':w.type==='tara'?'إنتاج بالطارة':w.type==='chef'?`Chef de travail — ${Number(w.dailyWage||0).toFixed(3)} د / يوم`:w.type+' د / يوم'}</td><td>${(w.type==='production'||w.type==='tara')?`أبيض: <b>${wt}</b> | ملون: <b>${ct}</b>`:'—'}</td><td><button class="btn danger" onclick="delWorker(${w.id})">حذف</button></td></tr>`}).join('')+'</tbody></table>';
+}
+function setAtt(id,date,val){db.attendance[date]=db.attendance[date]||{};db.attendance[date][String(id)]=Boolean(val);save();renderAttendance();}
+function renderAttendance(){
+ let d=attDate.value;if(!db.workers.length)return '<div class="empty">لا يوجد عمال.</div>';
+ return `<table><thead><tr><th>العامل</th><th>القسم</th><th>الحالة</th><th></th></tr></thead><tbody>`+
+ db.workers.map(w=>{let v=db.attendance[d]?.[w.id];return `<tr><td>${esc(w.name)}</td><td>${w.dept==='1'?'المصنع':'مصنع الطباشير'}</td><td><span class="badge ${v===true?'present':'absent'}">${v===true?'حاضر':'غائب'}</span></td><td><button class="btn ${v===true?'secondary':'primary'}" onclick="setAtt(${w.id},'${d}',${v===true?'false':'true'})">${v===true?'تسجيل غائب':'تسجيل حاضر'}</button></td></tr>`}).join('')+'</tbody></table>';
+}
+function setAllAttendance(v){
+ let d=attDate.value;if(!d)return;
+ db.attendance[d]={};db.workers.forEach(w=>db.attendance[d][String(w.id)]=Boolean(v));
+ save();renderAttendance();
+ if(v) showValidated();
+}
+function addProduction(){
+ let d=pDate.value,id=Number(productionWorker.value),w=db.workers.find(a=>a.id===id),product=pProduct.value,qty=Number(pQty.value)||0,colorTara=Number(pColorTara.value)||0,whiteTara=Number(pWhiteTara.value)||0,taraType=pTaraType.value,taraQty=Number(pTaraQty.value)||0;
+ if(w?.type==='tara') product='TARA';
+ if(!w)return alert('اختر عامل إنتاج');
+ if(db.attendance[d]?.[id]!==true)return alert('العامل غير مسجل كحاضر في هذا اليوم.');
+ if(product==='TARA'){ qty=0;colorTara=0;whiteTara=0; if(taraQty<=0)return alert('أدخل عدد الطارات.'); if(taraType==='color')colorTara=taraQty; else whiteTara=taraQty; } else if(qty<=0 && colorTara<=0 && whiteTara<=0)return alert('أدخل عدد الكراتين أو عدد الطارات.');
+ let price=Number(db.settings.productPrices?.[product] ?? PRODUCT_PRICES[product] ?? 0),cartonAmount=qty*price,colorAmount=colorTara*Number(db.settings.colorPrice||0),whiteAmount=whiteTara*Number(db.settings.whitePrice||0),amount=cartonAmount+colorAmount+whiteAmount;
+ if(product==='TARA') price=taraType==='color'?Number(db.settings.colorPrice||0):Number(db.settings.whitePrice||0); amount=taraQty*price; cartonAmount=0; colorAmount=taraType==='color'?amount:0; whiteAmount=taraType==='white'?amount:0;
+ let old=db.production.find(r=>r.date===d&&r.workerId===id&&r.product===product);
+ let data={qty,price,colorTara,whiteTara,taraType:product==='TARA'?taraType:null,taraQty:product==='TARA'?taraQty:0,colorPrice:Number(db.settings.colorPrice||0),whitePrice:Number(db.settings.whitePrice||0),cartonAmount,colorAmount,whiteAmount,amount};
+ if(old) Object.assign(old,data); else db.production.push({id:Date.now(),date:d,workerId:id,product,...data});
+ save();pQty.value=0;pColorTara.value=0;pWhiteTara.value=0;pTaraQty.value=0;
+}
+function productionHTML(){
+ if(!db.production.length)return '<div class="empty">لا توجد بيانات إنتاج.</div>';
+ return '<table><thead><tr><th>التاريخ</th><th>العامل</th><th>المنتج</th><th>الكراتين</th><th>طارات ملون</th><th>طارات أبيض</th><th>القيمة الإجمالية</th></tr></thead><tbody>'+
+ db.production.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(r=>{let w=db.workers.find(x=>x.id===r.workerId);let product=r.product||'GB80';let qty=Number(r.qty||0),price=Number(r.price ?? db.settings.productPrices?.[product] ?? PRODUCT_PRICES[product] ?? 0),ct=Number(r.colorTara||0),wt=Number(r.whiteTara||0);let amount=Number(r.amount??(qty*price+ct*Number(r.colorPrice||db.settings.colorPrice||0)+wt*Number(r.whitePrice||db.settings.whitePrice||0)));return `<tr><td>${r.date}</td><td>${esc(w?.name||'محذوف')}</td><td>${esc(PRODUCT_LABELS[product]||product)}</td><td>${qty}</td><td>${ct}</td><td>${wt}</td><td><b>${amount.toFixed(3)} د</b></td></tr>`}).join('')+'</tbody></table>';
+}
+function productionRows(from,to,onlyId='all'){
+ let workers=db.workers.filter(w=>(w.type==='production'||w.type==='tara')&&(onlyId==='all'||String(w.id)===String(onlyId)));
+ return workers.map(w=>{
+   let rec=db.production.filter(r=>r.workerId===w.id&&r.date>=from&&r.date<=to);
+   let value=rec.reduce((s,r)=>s+Number(r.amount||0),0);
+   let days=[...new Set(rec.map(r=>r.date))].length;
+   let qty=rec.reduce((s,r)=>s+Number(r.qty||0),0);
+   let colorTara=rec.reduce((s,r)=>s+Number(r.colorTara||0),0);
+   let whiteTara=rec.reduce((s,r)=>s+Number(r.whiteTara||0),0);
+   return {id:w.id,name:w.name,rec,qty,colorTara,whiteTara,value,days};
+ }).sort((a,b)=>b.value-a.value||a.name.localeCompare(b.name,'ar'));
+}
+function fillProductionWorkerSelect(){
+ let current=productionWorker.value||'';
+ productionWorker.innerHTML=db.workers.filter(w=>w.type==='production'||w.type==='tara').map(w=>`<option value="${w.id}">${esc(w.name)}</option>`).join('')||'<option value="">لا يوجد عمال إنتاج</option>';
+ if(db.workers.some(w=>String(w.id)===String(current)&&(w.type==='production'||w.type==='tara'))) productionWorker.value=current;
+}
+function calculateWeeklyProduction(){
+ let from=pFrom.value,to=pTo.value;if(!from||!to)return;
+ let rows=productionRows(from,to,weeklyWorker.value);
+ let totalQty=rows.reduce((s,r)=>s+r.qty,0),totalColor=rows.reduce((s,r)=>s+r.colorTara,0),totalWhite=rows.reduce((s,r)=>s+r.whiteTara,0),totalV=rows.reduce((s,r)=>s+r.value,0);
+ document.getElementById('weeklyProductionTable').innerHTML=
+ `<table><thead><tr><th>#</th><th>العامل</th><th>أيام الإنتاج</th><th>الكراتين</th><th>طارات ملون</th><th>طارات أبيض</th><th>القيمة</th></tr></thead><tbody>`+
+ rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name)}</td><td>${r.days}</td><td>${r.qty}</td><td>${r.colorTara}</td><td>${r.whiteTara}</td><td><b>${r.value.toFixed(3)} د</b></td></tr>`).join('')+
+ `<tr><th colspan="3">الإجمالي</th><th>${totalQty}</th><th>${totalColor}</th><th>${totalWhite}</th><th>${totalV.toFixed(3)} د</th></tr></tbody></table>`;
+}
+function printWeeklyWorker(){
+ let from=pFrom.value,to=pTo.value,id=weeklyWorker.value;
+ if(!from||!to)return;
+ if(id==='all'){alert('اختر عاملًا أولاً لطباعة إنتاج عامل واحد.');return}
+ let r=productionRows(from,to,id)[0];if(!r)return;
+ openWeeklyPrint([r],from,to,true);
+}
+function printWeeklyAll(){
+ let from=pFrom.value,to=pTo.value;if(!from||!to)return;
+ openWeeklyPrint(productionRows(from,to,'all'),from,to,false);
+}
+function openWeeklyPrint(rows,from,to,detail){
+ let totalQty=rows.reduce((s,r)=>s+r.qty,0),totalV=rows.reduce((s,r)=>s+r.value,0);
+ let body=weeklyHeader(from,to);
+ body+=`<table class="allTable"><thead><tr><th>#</th><th>العامل</th><th>أيام الإنتاج</th><th>الكراتين</th><th>القيمة</th></tr></thead><tbody>`;
+ rows.forEach((r,i)=>body+=`<tr><td>${i+1}</td><td>${esc(r.name)}</td><td>${r.days}</td><td>${r.qty}</td><td><b>${r.value.toFixed(3)} د</b></td></tr>`);
+ body+=`<tr class="totalRow"><td colspan="3">إجمالي الإنتاج</td><td>${totalQty}</td><td>${totalV.toFixed(3)} د</td></tr></tbody></table>`;
+ if(detail&&rows[0]){
+   body+=`<h3 style="color:#2f6f4e;margin-top:22px">تفاصيل الإنتاج اليومي — ${esc(rows[0].name)}</h3>`;
+   body+=`<table class="allTable"><thead><tr><th>التاريخ</th><th>المنتج</th><th>الكراتين</th><th>السعر</th><th>قيمة اليوم</th></tr></thead><tbody>`;
+   rows[0].rec.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(x=>{let product=x.product||'GB80';let price=Number(x.price ?? db.settings.productPrices?.[product] ?? PRODUCT_PRICES[product] ?? 0);body+=`<tr><td>${x.date}</td><td>${esc(PRODUCT_LABELS[product]||product)}</td><td>${Number(x.qty||0)}</td><td>${price.toFixed(3)} د</td><td>${Number(x.amount||0).toFixed(3)} د</td></tr>`});
+   body+=`</tbody></table>`;
+ }
+ body+=`<div class="allSign"><div>إمضاء المسؤول<br><br>________________</div></div>`;
+ let win=window.open('','_blank');if(!win){alert('يرجى السماح بالنوافذ المنبثقة للطباعة.');return}
+ win.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>SAFAS - الإنتاج الأسبوعي</title>${printCss()}<style>#weeklyProduction .panel{animation:pageIn .35s ease}.allHeader h2{margin-bottom:8px}.allMeta{border-radius:8px}</style>
+<style id="mainDateUpgrade">
+/* Large, highly visible date on the SAFAS home screen */
+#todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+  font-size:clamp(1.35rem,2.7vw,2.25rem)!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  letter-spacing:.2px!important;
+  line-height:1.25!important;
+  padding:12px 18px!important;
+  margin:8px 0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:58px!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,#f0f7f2,#ffffff)!important;
+  border:1px solid #dce9df!important;
+  box-shadow:0 10px 25px rgba(38,61,48,.07)!important;
+  animation:dateReveal .55s cubic-bezier(.2,.8,.2,1) both!important;
+}
+@keyframes dateReveal{
+ from{opacity:0;transform:translateY(-8px) scale(.97)}
+ to{opacity:1;transform:none}
+}
+@media(max-width:700px){
+ #todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+   font-size:1.25rem!important;
+   width:100%!important;
+ }
+}
+</style>
+<style id="backupVisibilityFix">
+.backupPanel{overflow:hidden!important}
+.backupHint{margin:-4px 0 18px;color:#728078;font-size:14px}
+.backupActions{display:flex!important;flex-wrap:wrap!important;gap:12px!important;align-items:center!important}
+.backupBtn{min-width:220px!important;min-height:52px!important;font-size:15px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;opacity:1!important;visibility:visible!important}
+.backupPanel .backupBtn.primary{color:#fff!important;background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important}
+.backupPanel .backupBtn.secondary{color:#34443b!important;background:#e9efeb!important;border:1px solid #d6e2da!important}
+.backupMsg{min-height:24px;margin-top:14px;font-weight:800;transition:opacity .25s,transform .25s}
+@media(max-width:650px){.backupActions{flex-direction:column}.backupBtn{width:100%!important;min-width:0!important}}
+</style><style>.backupMsg{transition:opacity .25s,transform .25s}</style>
+<style id="safasFinalVisual">
+/* Main header: large readable title + date */
+.top{
+  min-height:112px!important;
+  padding:22px 28px!important;
+  display:flex!important;
+  align-items:center!important;
+  border-radius:22px!important;
+}
+.top #pageTitle{
+  font-size:clamp(2rem,4vw,3.15rem)!important;
+  line-height:1.05!important;
+  font-weight:950!important;
+  color:#26372d!important;
+  margin:0 0 10px!important;
+}
+.top .date,#today{
+  display:block!important;
+  font-size:clamp(1.55rem,3vw,2.35rem)!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  background:#edf6f0!important;
+  border:1px solid #d7e8dc!important;
+  border-radius:14px!important;
+  padding:10px 16px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  box-shadow:0 8px 22px rgba(47,111,78,.08)!important;
+  animation:headerDateIn .55s ease both!important;
+}
+@keyframes headerDateIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:none}
+}
+
+/* More elegant, welcoming login screen */
+#loginScreen{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(63,138,99,.20),transparent 32%),
+    radial-gradient(circle at 85% 80%,rgba(47,111,78,.15),transparent 35%),
+    linear-gradient(135deg,#f7faf8 0%,#e5efe8 100%)!important;
+}
+.loginCard{
+  width:min(500px,92vw)!important;
+  padding:48px 44px 42px!important;
+  border-radius:30px!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid rgba(255,255,255,.95)!important;
+  box-shadow:0 30px 90px rgba(38,61,48,.17),0 4px 16px rgba(38,61,48,.06)!important;
+}
+.loginTitle{
+  font-size:clamp(2.8rem,8vw,4.3rem)!important;
+  font-weight:950!important;
+  letter-spacing:4px!important;
+  color:#2f6f4e!important;
+  text-shadow:0 8px 22px rgba(47,111,78,.13)!important;
+}
+.loginSub{
+  font-size:15px!important;
+  line-height:1.7!important;
+  color:#68766e!important;
+  margin:4px auto 28px!important;
+  max-width:390px!important;
+}
+.loginInput{
+  width:100%!important;
+  height:56px!important;
+  margin:9px 0!important;
+  padding:0 18px!important;
+  border:1px solid #dce7df!important;
+  border-radius:15px!important;
+  background:#f8fbf9!important;
+  font-size:16px!important;
+  transition:.22s ease!important;
+}
+.loginInput:focus{
+  background:#fff!important;
+  border-color:#6fa387!important;
+  box-shadow:0 0 0 5px rgba(63,138,99,.10)!important;
+  transform:translateY(-1px)!important;
+}
+.loginBtn{
+  width:100%!important;
+  height:56px!important;
+  margin-top:14px!important;
+  border-radius:15px!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  box-shadow:0 12px 25px rgba(47,111,78,.18)!important;
+}
+.loginCard:before{
+  content:"";
+  display:block;
+  width:70px;height:5px;
+  margin:0 auto 22px;
+  border-radius:99px;
+  background:linear-gradient(90deg,#2f6f4e,#6ca583);
+}
+.loginError{
+  border-radius:12px!important;
+  margin-top:12px!important;
+  animation:shake .28s ease!important;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  35%{transform:translateX(-5px)}
+  70%{transform:translateX(5px)}
+}
+
+/* Backup title without any broken icon */
+.backupPanel h2{
+  font-size:clamp(1.7rem,3vw,2.2rem)!important;
+  font-weight:950!important;
+  color:#2d4035!important;
+}
+
+/* General readability */
+.panel h2,.panel h3{font-weight:900!important}
+</style>
+</head><body>${body}</body></html>`);
+ win.document.close();win.focus();setTimeout(()=>win.print(),400);
+}
+function wageRows(from,to,onlyId='all'){
+ let list=db.workers.filter(w=>onlyId==='all'||String(w.id)===String(onlyId));
+ let rows=list.map(w=>{
+   if(w.type==='production'||w.type==='tara'){
+     let rec=db.production.filter(r=>r.workerId===w.id&&r.date>=from&&r.date<=to);
+     let sum=rec.reduce((s,r)=>s+Number(r.amount||0),0);
+     let days=new Set(rec.map(r=>r.date)).size;
+     return {id:w.id,name:w.name,type:w.type==='tara'?'إنتاج بالطارة':'مصنع الطباشير',days,abs:0,wage:sum,records:rec};
+   }else{
+     let days=0,abs=0;
+     for(let d=new Date(from+'T00:00:00');dateStr(d)<=to;d.setDate(d.getDate()+1)){
+       let v=db.attendance[dateStr(d)]?.[String(w.id)];
+       if(v===true)days++; else abs++;
+     }
+     return {id:w.id,name:w.name,type:w.type==='chef'?'Chef de travail':'المصنع',days,abs,wage:days*(w.type==='chef'?Number(w.dailyWage||0):Number(w.type)),records:[]};
+   }
+ });
+ const rank={ 'Chef de travail':0, 'المصنع':1, 'مصنع الطباشير':2 };
+ return rows.sort((a,b)=>(rank[a.type]-rank[b.type])||b.wage-a.wage||a.name.localeCompare(b.name,'ar'));
+}
+function calculateWages(){
+ let from=wFrom.value,to=wTo.value;if(!from||!to)return;
+ let rows=wageRows(from,to,wWorker.value);
+ document.getElementById('wagesTable').innerHTML=`<table><thead><tr><th>#</th><th>العامل</th><th>الصنف</th><th>الحضور/الإنتاج</th><th>الغياب</th><th>الأجر</th></tr></thead><tbody>`+
+ rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name)}</td><td>${r.type}</td><td>${r.days}</td><td>${r.abs}</td><td><b>${r.wage.toFixed(3)} د</b></td></tr>`).join('')+
+ `<tr><th colspan="5">الإجمالي</th><th>${rows.reduce((s,r)=>s+r.wage,0).toFixed(3)} د</th></tr></tbody></table>`;
+}
+function fillWageWorkerSelect(){
+ let current=wWorker.value||'all';
+ wWorker.innerHTML='<option value="all">جميع العمال</option>'+db.workers.map(w=>`<option value="${w.id}">${esc(w.name)}</option>`).join('');
+ wWorker.value=db.workers.some(w=>String(w.id)===String(current))?current:'all';
+}
+function wageSheetHTML(r,from,to,num){
+ let production='';
+ if(r.type==='مصنع الطباشير'||r.type==='إنتاج بالطارة'){
+   production=`<h3>تفاصيل الإنتاج</h3><table><tr><th>التاريخ</th><th>المنتج</th><th>الكراتين</th><th>طارات ملون</th><th>طارات أبيض</th><th>قيمة الكراتين</th><th>قيمة الطارات</th><th>قيمة اليوم</th></tr>`+
+   r.records.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(x=>{let product=x.product||'GB80';let price=Number(x.price ?? db.settings.productPrices?.[product] ?? PRODUCT_PRICES[product] ?? 0),qty=Number(x.qty||0),ct=Number(x.colorTara||0),wt=Number(x.whiteTara||0);let ca=Number(x.cartonAmount??qty*price),ta=Number(x.colorAmount??ct*Number(x.colorPrice||db.settings.colorPrice||0))+Number(x.whiteAmount??wt*Number(x.whitePrice||db.settings.whitePrice||0));return `<tr><td>${x.date}</td><td>${esc(PRODUCT_LABELS[product]||product)}</td><td>${qty}</td><td>${ct}</td><td>${wt}</td><td>${ca.toFixed(3)} د</td><td>${ta.toFixed(3)} د</td><td><b>${Number(x.amount??ca+ta).toFixed(3)} د</b></td></tr>`}).join('')+
+   `</table>`;
+ }
+ return `<div class="salarySheet">
+ <div class="sheetHead"><div><b>SAFAS</b><br><span>Société Abidi pour la Fabrication des Articles Scolaires</span></div><div class="sheetNo">تاريخ الإصدار: ${dateStr()}</div></div>
+ <h2>كشف أجر</h2>
+ <div class="sheetInfo"><div><b>العامل:</b> ${esc(r.name)}</div><div><b>الصنف:</b> ${r.type}</div><div><b>الفترة:</b> ${from} → ${to}</div></div>
+ <table><tr><th>أيام الحضور / الإنتاج</th><th>أيام الغياب</th><th>الأجر المستحق</th></tr><tr><td>${r.days}</td><td>${r.abs}</td><td><b>${r.wage.toFixed(3)} د</b></td></tr></table>
+ ${production}
+ <div class="signatures"><div>إمضاء العامل<br><br>________________</div><div>إمضاء المسؤول<br><br>________________</div></div>
+ </div>`;
+}
+function printSelectedWage(){
+ let from=wFrom.value,to=wTo.value,id=wWorker.value;
+ if(id==='all'){alert('اختر عاملًا أولاً لطباعة كشف عامل واحد.');return}
+ let r=wageRows(from,to,id)[0]; if(!r)return;
+ openPrintIndividual(r,from,to);
+}
+function printAllWages(){
+ let from=wFrom.value,to=wTo.value;
+ if(!from||!to)return;
+ openPrintAll(wageRows(from,to,'all'),from,to);
+}
+function printCss(){
+ return `<style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font-family:Tahoma,Arial,sans-serif;color:#26332c;background:#fff;margin:0}.salarySheet{min-height:260mm;padding:6mm 3mm;page-break-after:always}.salarySheet:last-child{page-break-after:auto}.sheetHead{display:flex;justify-content:space-between;border-bottom:3px solid #2f6f4e;padding-bottom:12px}.sheetHead b{font-size:27px;color:#2f6f4e}.sheetHead span{font-size:10px;color:#69736d}.sheetNo{text-align:left;font-size:10px;color:#69736d;line-height:1.9}h2{text-align:center;margin:20px 0;color:#2f6f4e}.sheetInfo{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#f3f6f3;padding:12px;border-radius:7px;margin-bottom:14px}table{width:100%;border-collapse:collapse;margin:10px 0}th,td{border:1px solid #d9e0db;padding:8px;text-align:center}th{background:#eef3ef}.signatures{display:flex;justify-content:space-between;margin-top:65px;text-align:center}.signatures div{width:40%;font-size:12px}.allHeader{text-align:center;border-bottom:3px solid #2f6f4e;padding-bottom:12px;margin-bottom:12px}.allHeader b{font-size:28px;color:#2f6f4e}.allHeader small{color:#69736d}.allMeta{display:flex;justify-content:space-between;background:#f3f6f3;padding:10px;margin-bottom:12px;font-size:12px}.allTable th,.allTable td{font-size:10px;padding:6px}.groupRow td{background:#e7eee9!important;font-weight:900;text-align:right}.totalRow td{font-weight:900;background:#edf3ee}.allSign{display:flex;justify-content:space-between;margin-top:25px;text-align:center;font-size:11px}.allSign div{width:35%}</style>`;
+}
+function openPrintIndividual(r,from,to){
+ let win=window.open('','_blank');if(!win){alert('يرجى السماح بالنوافذ المنبثقة للطباعة.');return}
+ win.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>SAFAS - كشف أجر</title>${printCss()}
+<style id="safasBeauty">
+:root{
+ --green:#2f6f4e;--green2:#3f8a63;--green3:#eaf3ed;
+ --ink:#25332b;--muted:#728078;--line:#e2e9e4;--bg:#f4f7f5;--white:#fff;
+ --shadow:0 14px 40px rgba(38,61,48,.08);
+}
+*{box-sizing:border-box}
+body{
+ font-family:"Segoe UI",Tahoma,Arial,sans-serif!important;
+ background:radial-gradient(circle at 10% 0%,#ffffff 0,#f4f7f5 35%,#eef3ef 100%)!important;
+ color:var(--ink);letter-spacing:.05px;
+}
+.sidebar{
+ background:linear-gradient(180deg,#34433b,#29352f)!important;
+ box-shadow:0 0 35px rgba(28,45,36,.13)!important;
+}
+.brand{font-weight:900!important;letter-spacing:.6px}
+.brand span{background:linear-gradient(135deg,var(--green2),var(--green))!important}
+.nav button{border:1px solid transparent!important;transition:transform .22s ease,background .22s ease,box-shadow .22s ease!important}
+.nav button:hover{transform:translateX(-4px)!important;background:rgba(255,255,255,.07)!important}
+.nav button.active{box-shadow:0 10px 24px rgba(47,111,78,.22)!important}
+.main{animation:pageIn .45s ease both}
+.top{
+ border:1px solid rgba(226,233,228,.9)!important;border-radius:20px!important;
+ box-shadow:var(--shadow)!important;backdrop-filter:blur(8px);
+}
+.cards .card,.panel{
+ border:1px solid var(--line)!important;border-radius:20px!important;
+ box-shadow:var(--shadow)!important;transition:transform .2s ease,box-shadow .2s ease!important;
+}
+.cards .card:hover,.panel:hover{transform:translateY(-2px);box-shadow:0 18px 45px rgba(38,61,48,.10)!important}
+.card:before{width:4px!important;background:linear-gradient(#3f8a63,#2f6f4e)!important}
+input,select{
+ border:1px solid #dce5df!important;background:#fbfdfc!important;
+ color:var(--ink)!important;outline:none!important;
+ transition:border-color .2s,box-shadow .2s,transform .2s!important;
+}
+input:focus,select:focus{border-color:#76a98c!important;box-shadow:0 0 0 4px rgba(47,111,78,.09)!important;transform:translateY(-1px)}
+.btn{
+ border:0!important;border-radius:12px!important;font-weight:800!important;
+ transition:transform .2s ease,box-shadow .2s ease,filter .2s ease!important;
+}
+.btn:hover{transform:translateY(-2px)!important;box-shadow:0 9px 20px rgba(38,61,48,.13)!important}
+.primary{background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important}
+.secondary{background:#e9efeb!important;color:#34443b!important}
+table{border-collapse:separate!important;border-spacing:0 5px!important}
+thead th{background:#edf3ef!important;color:#526158!important;border:0!important}
+tbody tr{box-shadow:0 3px 10px rgba(38,61,48,.035);transition:transform .18s,box-shadow .18s!important}
+tbody tr:hover{transform:scale(1.005);box-shadow:0 8px 18px rgba(38,61,48,.07)}
+.badge{border-radius:999px!important}
+h1,h2,h3{letter-spacing:-.2px}
+.actions{gap:10px!important}
+#loginScreen{
+ background:
+ radial-gradient(circle at 15% 15%,rgba(63,138,99,.14),transparent 28%),
+ radial-gradient(circle at 85% 85%,rgba(47,111,78,.12),transparent 30%),
+ linear-gradient(135deg,#f7faf8,#e7efe9)!important;
+}
+.loginCard{
+ border:1px solid rgba(255,255,255,.9)!important;
+ box-shadow:0 30px 90px rgba(38,61,48,.15)!important;
+ animation:loginIn .65s cubic-bezier(.2,.8,.2,1)!important;
+}
+.loginTitle{letter-spacing:2px!important}
+.loginBtn{background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important;transition:transform .2s,box-shadow .2s!important}
+.loginBtn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(47,111,78,.25)}
+#successToast{border:1px solid #dce9df!important;backdrop-filter:blur(10px)}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes loginIn{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+@media(max-width:900px){.main{padding:16px!important}}
+</style>
+<style>#weeklyProduction .panel{animation:pageIn .35s ease}.allHeader h2{margin-bottom:8px}.allMeta{border-radius:8px}</style>
+<style id="mainDateUpgrade">
+/* Large, highly visible date on the SAFAS home screen */
+#todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+  font-size:clamp(1.35rem,2.7vw,2.25rem)!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  letter-spacing:.2px!important;
+  line-height:1.25!important;
+  padding:12px 18px!important;
+  margin:8px 0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:58px!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,#f0f7f2,#ffffff)!important;
+  border:1px solid #dce9df!important;
+  box-shadow:0 10px 25px rgba(38,61,48,.07)!important;
+  animation:dateReveal .55s cubic-bezier(.2,.8,.2,1) both!important;
+}
+@keyframes dateReveal{
+ from{opacity:0;transform:translateY(-8px) scale(.97)}
+ to{opacity:1;transform:none}
+}
+@media(max-width:700px){
+ #todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+   font-size:1.25rem!important;
+   width:100%!important;
+ }
+}
+</style>
+<style id="backupVisibilityFix">
+.backupPanel{overflow:hidden!important}
+.backupHint{margin:-4px 0 18px;color:#728078;font-size:14px}
+.backupActions{display:flex!important;flex-wrap:wrap!important;gap:12px!important;align-items:center!important}
+.backupBtn{min-width:220px!important;min-height:52px!important;font-size:15px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;opacity:1!important;visibility:visible!important}
+.backupPanel .backupBtn.primary{color:#fff!important;background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important}
+.backupPanel .backupBtn.secondary{color:#34443b!important;background:#e9efeb!important;border:1px solid #d6e2da!important}
+.backupMsg{min-height:24px;margin-top:14px;font-weight:800;transition:opacity .25s,transform .25s}
+@media(max-width:650px){.backupActions{flex-direction:column}.backupBtn{width:100%!important;min-width:0!important}}
+</style><style>.backupMsg{transition:opacity .25s,transform .25s}</style>
+<style id="safasFinalVisual">
+/* Main header: large readable title + date */
+.top{
+  min-height:112px!important;
+  padding:22px 28px!important;
+  display:flex!important;
+  align-items:center!important;
+  border-radius:22px!important;
+}
+.top #pageTitle{
+  font-size:clamp(2rem,4vw,3.15rem)!important;
+  line-height:1.05!important;
+  font-weight:950!important;
+  color:#26372d!important;
+  margin:0 0 10px!important;
+}
+.top .date,#today{
+  display:block!important;
+  font-size:clamp(1.55rem,3vw,2.35rem)!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  background:#edf6f0!important;
+  border:1px solid #d7e8dc!important;
+  border-radius:14px!important;
+  padding:10px 16px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  box-shadow:0 8px 22px rgba(47,111,78,.08)!important;
+  animation:headerDateIn .55s ease both!important;
+}
+@keyframes headerDateIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:none}
+}
+
+/* More elegant, welcoming login screen */
+#loginScreen{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(63,138,99,.20),transparent 32%),
+    radial-gradient(circle at 85% 80%,rgba(47,111,78,.15),transparent 35%),
+    linear-gradient(135deg,#f7faf8 0%,#e5efe8 100%)!important;
+}
+.loginCard{
+  width:min(500px,92vw)!important;
+  padding:48px 44px 42px!important;
+  border-radius:30px!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid rgba(255,255,255,.95)!important;
+  box-shadow:0 30px 90px rgba(38,61,48,.17),0 4px 16px rgba(38,61,48,.06)!important;
+}
+.loginTitle{
+  font-size:clamp(2.8rem,8vw,4.3rem)!important;
+  font-weight:950!important;
+  letter-spacing:4px!important;
+  color:#2f6f4e!important;
+  text-shadow:0 8px 22px rgba(47,111,78,.13)!important;
+}
+.loginSub{
+  font-size:15px!important;
+  line-height:1.7!important;
+  color:#68766e!important;
+  margin:4px auto 28px!important;
+  max-width:390px!important;
+}
+.loginInput{
+  width:100%!important;
+  height:56px!important;
+  margin:9px 0!important;
+  padding:0 18px!important;
+  border:1px solid #dce7df!important;
+  border-radius:15px!important;
+  background:#f8fbf9!important;
+  font-size:16px!important;
+  transition:.22s ease!important;
+}
+.loginInput:focus{
+  background:#fff!important;
+  border-color:#6fa387!important;
+  box-shadow:0 0 0 5px rgba(63,138,99,.10)!important;
+  transform:translateY(-1px)!important;
+}
+.loginBtn{
+  width:100%!important;
+  height:56px!important;
+  margin-top:14px!important;
+  border-radius:15px!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  box-shadow:0 12px 25px rgba(47,111,78,.18)!important;
+}
+.loginCard:before{
+  content:"";
+  display:block;
+  width:70px;height:5px;
+  margin:0 auto 22px;
+  border-radius:99px;
+  background:linear-gradient(90deg,#2f6f4e,#6ca583);
+}
+.loginError{
+  border-radius:12px!important;
+  margin-top:12px!important;
+  animation:shake .28s ease!important;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  35%{transform:translateX(-5px)}
+  70%{transform:translateX(5px)}
+}
+
+/* Backup title without any broken icon */
+.backupPanel h2{
+  font-size:clamp(1.7rem,3vw,2.2rem)!important;
+  font-weight:950!important;
+  color:#2d4035!important;
+}
+
+/* General readability */
+.panel h2,.panel h3{font-weight:900!important}
+</style>
+</head><body>${wageSheetHTML(r,from,to,'SAFAS-'+Date.now())}</body></html>`);
+ win.document.close();win.focus();setTimeout(()=>win.print(),400);
+}
+function openPrintAll(rows,from,to){
+ let groups=['Chef de travail','المصنع','مصنع الطباشير'];
+ let order=[];groups.forEach(g=>{let x=rows.filter(r=>r.type===g);if(x.length)order.push({g,x})});
+ let n=0;
+ let body=`<div class="allHeader"><b>SAFAS</b><br><small>Société Abidi pour la Fabrication des Articles Scolaires</small><h2>كشف أجور جميع العمال</h2></div>
+ <div class="allMeta"><span>الفترة: ${from} → ${to}</span><span>تاريخ الإصدار: ${dateStr()}</span><span>عدد العمال: ${rows.length}</span></div>
+ <table class="allTable"><thead><tr><th>#</th><th>العامل</th><th>الصنف</th><th>الحضور / الإنتاج</th><th>الغياب</th><th>الأجر</th></tr></thead><tbody>`;
+ order.forEach(gr=>{
+   body+=`<tr class="groupRow"><td colspan="6">${gr.g}</td></tr>`;
+   gr.x.forEach(r=>{n++;body+=`<tr><td>${n}</td><td>${esc(r.name)}</td><td>${r.type}</td><td>${r.days}</td><td>${r.abs}</td><td><b>${r.wage.toFixed(3)} د</b></td></tr>`});
+ });
+ let total=rows.reduce((s,r)=>s+r.wage,0);
+ body+=`<tr class="totalRow"><td colspan="5">إجمالي الأجور</td><td>${total.toFixed(3)} د</td></tr></tbody></table>
+ <div class="allSign"><div>إمضاء المسؤول<br><br>________________</div></div>`;
+ let win=window.open('','_blank');if(!win){alert('يرجى السماح بالنوافذ المنبثقة للطباعة.');return}
+ win.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>SAFAS - جميع الأجور</title>${printCss()}
+<style id="safasBeauty">
+:root{
+ --green:#2f6f4e;--green2:#3f8a63;--green3:#eaf3ed;
+ --ink:#25332b;--muted:#728078;--line:#e2e9e4;--bg:#f4f7f5;--white:#fff;
+ --shadow:0 14px 40px rgba(38,61,48,.08);
+}
+*{box-sizing:border-box}
+body{
+ font-family:"Segoe UI",Tahoma,Arial,sans-serif!important;
+ background:radial-gradient(circle at 10% 0%,#ffffff 0,#f4f7f5 35%,#eef3ef 100%)!important;
+ color:var(--ink);letter-spacing:.05px;
+}
+.sidebar{
+ background:linear-gradient(180deg,#34433b,#29352f)!important;
+ box-shadow:0 0 35px rgba(28,45,36,.13)!important;
+}
+.brand{font-weight:900!important;letter-spacing:.6px}
+.brand span{background:linear-gradient(135deg,var(--green2),var(--green))!important}
+.nav button{border:1px solid transparent!important;transition:transform .22s ease,background .22s ease,box-shadow .22s ease!important}
+.nav button:hover{transform:translateX(-4px)!important;background:rgba(255,255,255,.07)!important}
+.nav button.active{box-shadow:0 10px 24px rgba(47,111,78,.22)!important}
+.main{animation:pageIn .45s ease both}
+.top{
+ border:1px solid rgba(226,233,228,.9)!important;border-radius:20px!important;
+ box-shadow:var(--shadow)!important;backdrop-filter:blur(8px);
+}
+.cards .card,.panel{
+ border:1px solid var(--line)!important;border-radius:20px!important;
+ box-shadow:var(--shadow)!important;transition:transform .2s ease,box-shadow .2s ease!important;
+}
+.cards .card:hover,.panel:hover{transform:translateY(-2px);box-shadow:0 18px 45px rgba(38,61,48,.10)!important}
+.card:before{width:4px!important;background:linear-gradient(#3f8a63,#2f6f4e)!important}
+input,select{
+ border:1px solid #dce5df!important;background:#fbfdfc!important;
+ color:var(--ink)!important;outline:none!important;
+ transition:border-color .2s,box-shadow .2s,transform .2s!important;
+}
+input:focus,select:focus{border-color:#76a98c!important;box-shadow:0 0 0 4px rgba(47,111,78,.09)!important;transform:translateY(-1px)}
+.btn{
+ border:0!important;border-radius:12px!important;font-weight:800!important;
+ transition:transform .2s ease,box-shadow .2s ease,filter .2s ease!important;
+}
+.btn:hover{transform:translateY(-2px)!important;box-shadow:0 9px 20px rgba(38,61,48,.13)!important}
+.primary{background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important}
+.secondary{background:#e9efeb!important;color:#34443b!important}
+table{border-collapse:separate!important;border-spacing:0 5px!important}
+thead th{background:#edf3ef!important;color:#526158!important;border:0!important}
+tbody tr{box-shadow:0 3px 10px rgba(38,61,48,.035);transition:transform .18s,box-shadow .18s!important}
+tbody tr:hover{transform:scale(1.005);box-shadow:0 8px 18px rgba(38,61,48,.07)}
+.badge{border-radius:999px!important}
+h1,h2,h3{letter-spacing:-.2px}
+.actions{gap:10px!important}
+#loginScreen{
+ background:
+ radial-gradient(circle at 15% 15%,rgba(63,138,99,.14),transparent 28%),
+ radial-gradient(circle at 85% 85%,rgba(47,111,78,.12),transparent 30%),
+ linear-gradient(135deg,#f7faf8,#e7efe9)!important;
+}
+.loginCard{
+ border:1px solid rgba(255,255,255,.9)!important;
+ box-shadow:0 30px 90px rgba(38,61,48,.15)!important;
+ animation:loginIn .65s cubic-bezier(.2,.8,.2,1)!important;
+}
+.loginTitle{letter-spacing:2px!important}
+.loginBtn{background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important;transition:transform .2s,box-shadow .2s!important}
+.loginBtn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(47,111,78,.25)}
+#successToast{border:1px solid #dce9df!important;backdrop-filter:blur(10px)}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes loginIn{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+@media(max-width:900px){.main{padding:16px!important}}
+</style>
+<style>#weeklyProduction .panel{animation:pageIn .35s ease}.allHeader h2{margin-bottom:8px}.allMeta{border-radius:8px}</style>
+<style id="mainDateUpgrade">
+/* Large, highly visible date on the SAFAS home screen */
+#todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+  font-size:clamp(1.35rem,2.7vw,2.25rem)!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  letter-spacing:.2px!important;
+  line-height:1.25!important;
+  padding:12px 18px!important;
+  margin:8px 0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:58px!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,#f0f7f2,#ffffff)!important;
+  border:1px solid #dce9df!important;
+  box-shadow:0 10px 25px rgba(38,61,48,.07)!important;
+  animation:dateReveal .55s cubic-bezier(.2,.8,.2,1) both!important;
+}
+@keyframes dateReveal{
+ from{opacity:0;transform:translateY(-8px) scale(.97)}
+ to{opacity:1;transform:none}
+}
+@media(max-width:700px){
+ #todayDate,.todayDate,.currentDate,.dateToday,.dashboardDate{
+   font-size:1.25rem!important;
+   width:100%!important;
+ }
+}
+</style>
+<style id="backupVisibilityFix">
+.backupPanel{overflow:hidden!important}
+.backupHint{margin:-4px 0 18px;color:#728078;font-size:14px}
+.backupActions{display:flex!important;flex-wrap:wrap!important;gap:12px!important;align-items:center!important}
+.backupBtn{min-width:220px!important;min-height:52px!important;font-size:15px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;opacity:1!important;visibility:visible!important}
+.backupPanel .backupBtn.primary{color:#fff!important;background:linear-gradient(135deg,#3f8a63,#2f6f4e)!important}
+.backupPanel .backupBtn.secondary{color:#34443b!important;background:#e9efeb!important;border:1px solid #d6e2da!important}
+.backupMsg{min-height:24px;margin-top:14px;font-weight:800;transition:opacity .25s,transform .25s}
+@media(max-width:650px){.backupActions{flex-direction:column}.backupBtn{width:100%!important;min-width:0!important}}
+</style><style>.backupMsg{transition:opacity .25s,transform .25s}</style>
+<style id="safasFinalVisual">
+/* Main header: large readable title + date */
+.top{
+  min-height:112px!important;
+  padding:22px 28px!important;
+  display:flex!important;
+  align-items:center!important;
+  border-radius:22px!important;
+}
+.top #pageTitle{
+  font-size:clamp(2rem,4vw,3.15rem)!important;
+  line-height:1.05!important;
+  font-weight:950!important;
+  color:#26372d!important;
+  margin:0 0 10px!important;
+}
+.top .date,#today{
+  display:block!important;
+  font-size:clamp(1.55rem,3vw,2.35rem)!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  color:#2f6f4e!important;
+  background:#edf6f0!important;
+  border:1px solid #d7e8dc!important;
+  border-radius:14px!important;
+  padding:10px 16px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  box-shadow:0 8px 22px rgba(47,111,78,.08)!important;
+  animation:headerDateIn .55s ease both!important;
+}
+@keyframes headerDateIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:none}
+}
+
+/* More elegant, welcoming login screen */
+#loginScreen{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(63,138,99,.20),transparent 32%),
+    radial-gradient(circle at 85% 80%,rgba(47,111,78,.15),transparent 35%),
+    linear-gradient(135deg,#f7faf8 0%,#e5efe8 100%)!important;
+}
+.loginCard{
+  width:min(500px,92vw)!important;
+  padding:48px 44px 42px!important;
+  border-radius:30px!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid rgba(255,255,255,.95)!important;
+  box-shadow:0 30px 90px rgba(38,61,48,.17),0 4px 16px rgba(38,61,48,.06)!important;
+}
+.loginTitle{
+  font-size:clamp(2.8rem,8vw,4.3rem)!important;
+  font-weight:950!important;
+  letter-spacing:4px!important;
+  color:#2f6f4e!important;
+  text-shadow:0 8px 22px rgba(47,111,78,.13)!important;
+}
+.loginSub{
+  font-size:15px!important;
+  line-height:1.7!important;
+  color:#68766e!important;
+  margin:4px auto 28px!important;
+  max-width:390px!important;
+}
+.loginInput{
+  width:100%!important;
+  height:56px!important;
+  margin:9px 0!important;
+  padding:0 18px!important;
+  border:1px solid #dce7df!important;
+  border-radius:15px!important;
+  background:#f8fbf9!important;
+  font-size:16px!important;
+  transition:.22s ease!important;
+}
+.loginInput:focus{
+  background:#fff!important;
+  border-color:#6fa387!important;
+  box-shadow:0 0 0 5px rgba(63,138,99,.10)!important;
+  transform:translateY(-1px)!important;
+}
+.loginBtn{
+  width:100%!important;
+  height:56px!important;
+  margin-top:14px!important;
+  border-radius:15px!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  box-shadow:0 12px 25px rgba(47,111,78,.18)!important;
+}
+.loginCard:before{
+  content:"";
+  display:block;
+  width:70px;height:5px;
+  margin:0 auto 22px;
+  border-radius:99px;
+  background:linear-gradient(90deg,#2f6f4e,#6ca583);
+}
+.loginError{
+  border-radius:12px!important;
+  margin-top:12px!important;
+  animation:shake .28s ease!important;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  35%{transform:translateX(-5px)}
+  70%{transform:translateX(5px)}
+}
+
+/* Backup title without any broken icon */
+.backupPanel h2{
+  font-size:clamp(1.7rem,3vw,2.2rem)!important;
+  font-weight:950!important;
+  color:#2d4035!important;
+}
+
+/* General readability */
+.panel h2,.panel h3{font-weight:900!important}
+</style>
+</head><body>${body}</body></html>`);
+ win.document.close();win.focus();setTimeout(()=>win.print(),400);
+}
+function changePassword(){
+ const old=document.getElementById('oldPassword').value;
+ const np=document.getElementById('newPassword').value;
+ const cp=document.getElementById('confirmPassword').value;
+ const msg=document.getElementById('passwordMsg');
+ if(old!==db.settings.password){msg.style.color='#a84745';msg.textContent='كلمة السر الحالية غير صحيحة.';return}
+ if(!np||np.length<4){msg.style.color='#a84745';msg.textContent='كلمة السر الجديدة يجب أن تحتوي على 4 أحرف على الأقل.';return}
+ if(np!==cp){msg.style.color='#a84745';msg.textContent='تأكيد كلمة السر غير مطابق.';return}
+ db.settings.password=np;save();
+ document.getElementById('oldPassword').value='';document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value='';
+ msg.style.color='#2f6f4e';msg.textContent='تم تغيير كلمة السر بنجاح.';
+}
+
+function showBackupMsg(text,ok=true){
+ const el=document.getElementById('backupMsg');
+ if(!el)return;
+ el.textContent=text;
+ el.style.color=ok?'#2f6f4e':'#a84745';
+ el.style.opacity='1';
+ el.style.transform='translateY(0)';
+ clearTimeout(window._backupMsgTimer);
+ window._backupMsgTimer=setTimeout(()=>{
+   el.style.opacity='0';
+   el.style.transform='translateY(-4px)';
+ },3000);
+}
+function createBackup(){
+ try{
+   // Read the exact current database from localStorage when available.
+   const raw=localStorage.getItem(KEY);
+   const current=raw?JSON.parse(raw):db;
+   const backup={
+     app:'SAFAS',
+     backupVersion:1,
+     createdAt:new Date().toISOString(),
+     data:JSON.parse(JSON.stringify(current))
+   };
+   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement('a');
+   const d=new Date();
+   const pad=n=>String(n).padStart(2,'0');
+   const stamp=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+   a.href=url;
+   a.download=`SAFAS_Backup_${stamp}.json`;
+   a.style.display='none';
+   document.body.appendChild(a);
+   a.click();
+   a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),1500);
+   showBackupMsg('✓ تم إنشاء النسخة الاحتياطية بنجاح');
+   if(typeof showValidated==='function')showValidated();
+ }catch(e){
+   console.error('SAFAS backup error:',e);
+   showBackupMsg('✕ تعذر إنشاء النسخة الاحتياطية',false);
+ }
+}
+function restoreBackup(event){
+ const file=event.target.files&&event.target.files[0];
+ if(!file)return;
+ const reader=new FileReader();
+ reader.onload=function(){
+   try{
+     const parsed=JSON.parse(reader.result);
+     const candidate=parsed&&parsed.app==='SAFAS'&&parsed.data?parsed.data:parsed;
+     if(!candidate||typeof candidate!=='object')throw new Error('invalid object');
+     if(!Array.isArray(candidate.workers))throw new Error('workers missing');
+     if(typeof candidate.attendance!=='object'||candidate.attendance===null)throw new Error('attendance missing');
+     if(!Array.isArray(candidate.production))throw new Error('production missing');
+     if(typeof candidate.settings!=='object'||candidate.settings===null)throw new Error('settings missing');
+
+     const safe=JSON.parse(JSON.stringify(candidate));
+     safe.workers=safe.workers||[];
+     safe.attendance=safe.attendance||{};
+     safe.production=safe.production||[];
+     safe.settings=safe.settings||{};
+     safe.settings.colorPrice=Number(safe.settings.colorPrice??1.5);
+     safe.settings.whitePrice=Number(safe.settings.whitePrice??1);
+     if(typeof safe.settings.password!=='string'||!safe.settings.password){
+       safe.settings.password='safas123';
+     }
+
+     // Validate serialization before touching the current database.
+     const serialized=JSON.stringify(safe);
+     if(!serialized)throw new Error('serialization failed');
+
+     localStorage.setItem(KEY,serialized);
+     showBackupMsg('✓ تم استرجاع النسخة. سيتم تحديث البرنامج...',true);
+     if(typeof showValidated==='function')showValidated();
+     setTimeout(()=>window.location.reload(),700);
+   }catch(e){
+     console.error('SAFAS restore error:',e);
+     showBackupMsg('✕ ملف النسخة الاحتياطية غير صالح',false);
+   }finally{
+     event.target.value='';
+   }
+ };
+ reader.onerror=function(){
+   showBackupMsg('✕ تعذر قراءة ملف النسخة الاحتياطية',false);
+   event.target.value='';
+ };
+ reader.readAsText(file);
+}
+function saveSettings(){let cp=Number(colorPrice.value),wp=Number(whitePrice.value),pp={GB80:Number(gb80Price.value),GC80:Number(gc80Price.value),PB10:Number(pb10Price.value),PC:Number(pcPrice.value)};if(!Number.isFinite(cp)||!Number.isFinite(wp)||cp<0||wp<0||Object.values(pp).some(v=>!Number.isFinite(v)||v<0))return alert('أدخل أسعارًا صحيحة.');db.settings.colorPrice=cp;db.settings.whitePrice=wp;db.settings.productPrices=pp;save();settingsMsg.textContent='تم حفظ جميع الأسعار بنجاح.';setTimeout(()=>settingsMsg.textContent='',2200)}
+function exportData(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='نسخة_احتياطية_الشركة.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();alert('تم استرجاع النسخة بنجاح')}catch(_){alert('ملف غير صالح')}};r.readAsText(f)}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function normalizeData(){
+  db.attendance=db.attendance||{};
+  Object.keys(db.attendance).forEach(d=>{
+    const obj=db.attendance[d]||{};
+    const normalized={};
+    Object.keys(obj).forEach(k=>normalized[String(k)]=Boolean(obj[k]));
+    db.attendance[d]=normalized;
+  });
+  db.workers=db.workers||[];
+  db.production=db.production||[];
+  db.production=db.production.map(r=>{
+    r.colorTara=Number(r.colorTara||0);r.whiteTara=Number(r.whiteTara||0);r.amount=Number(r.amount||0);r.taraQty=Number(r.taraQty||0);
+    if(r.product)return r;
+    // Keep old records readable; map the former colored/white quantities to GB80/GC80.
+    return r;
+  });
+  db.workers=db.workers.map(w=>{if(w.type==='chef' && !w.dailyWage)w.dailyWage=0;return w});
+  db.settings=db.settings||{};
+  db.settings.productPrices=Object.assign({GB80:2.5,GC80:3.571,PB10:2.5,PC:6.25},db.settings.productPrices||{});
+  db.settings.colorPrice=Number(db.settings.colorPrice ?? 1.5);
+  db.settings.whitePrice=Number(db.settings.whitePrice ?? 1);
+  // Compatibility with data saved by previous versions.
+  // If no password was stored yet, restore the default login.
+  if(typeof db.settings.password!=='string' || !db.settings.password){
+    db.settings.password='safas123';
+    localStorage.setItem(KEY,JSON.stringify(db));
+  }
+}
+normalizeData();
+
+
+function login(){
+ const n=document.getElementById('loginName').value.trim().toLowerCase();
+ const p=document.getElementById('loginPass').value;
+ const expected=(db.settings && db.settings.password)?db.settings.password:'safas123';
+ if(!n||!p){
+   document.getElementById('loginError').textContent='Veuillez saisir vos informations.';
+   document.getElementById('loginError').style.display='block';return
+ }
+ if(n!=='safas'||p!==expected){
+   document.getElementById('loginError').textContent='Nom d’utilisateur ou mot de passe incorrect.';
+   document.getElementById('loginError').style.display='block';return
+ }
+ document.getElementById('loginError').style.display='none';
+ document.getElementById('loginScreen').style.display='none';
+}
+function showValidated(){
+ const t=document.getElementById('successToast');
+ t.classList.add('show');
+ clearTimeout(window._toastTimer);
+ window._toastTimer=setTimeout(()=>t.classList.remove('show'),1000);
+}
+function refreshAll(){
+ cWorkers.textContent=db.workers.length;
+ let d=dateStr(), a=db.attendance[d]||{}, present=db.workers.filter(w=>a[w.id]===true).length;
+ cPresent.textContent=present;cAbsent.textContent=db.workers.length-present;
+ cProduction.textContent=db.production.filter(r=>r.date===d).reduce((s,r)=>s+r.amount,0).toFixed(3)+' د';
+ deptSummary.innerHTML=['1','2'].map(dep=>{let ws=db.workers.filter(w=>w.dept===dep),p=ws.filter(w=>a[w.id]===true).length;return `<tr><td>${dep==='1'?'المصنع':'مصنع الطباشير'}</td><td>${ws.length}</td><td>${p}</td><td>${ws.length-p}</td></tr>`}).join('');
+ let todays=db.production.filter(r=>r.date===d);todayProduction.innerHTML=todays.length?`<table><tr><th>العامل</th><th>القيمة</th></tr>${todays.map(r=>`<tr><td>${esc(db.workers.find(w=>w.id===r.workerId)?.name||'')}</td><td>${r.amount.toFixed(3)} د</td></tr>`).join('')}</table>`:'<div class="empty">لا توجد بيانات إنتاج اليوم.</div>';
+ workersTable.innerHTML=workersHTML();attendanceTable.innerHTML=renderAttendance();productionTable.innerHTML=productionHTML();fillWageWorkerSelect();fillProductionWorkerSelect();
+ if(typeof colorPrice!=='undefined'){colorPrice.value=db.settings.colorPrice;whitePrice.value=db.settings.whitePrice;gb80Price.value=db.settings.productPrices.GB80;gc80Price.value=db.settings.productPrices.GC80;pb10Price.value=db.settings.productPrices.PB10;pcPrice.value=db.settings.productPrices.PC};
+}
+refreshAll();
+</script>
+</body></html>
